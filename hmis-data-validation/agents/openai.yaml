@@ -1,0 +1,4 @@
+interface:
+  display_name: "HMIS Data Validation"
+  short_description: "Govern HMIS validation standards"
+  default_prompt: "Use $hmis-data-validation to govern, implement, or review an HMIS validation change with source-of-truth, layer, response-contract, and Do/Undo controls."
