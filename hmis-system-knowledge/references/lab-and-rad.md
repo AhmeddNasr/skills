@@ -36,6 +36,10 @@
   - MOH negative: user undoes complete and edits value/normality; the check runs again before saving.
   - Lab grid: red highlight + blocked icon only (no filter, no hover message). Blood bank is not mentioned in the story at all (user's choice).
 
+- **PBI 37217** (module Lab and Rad, iteration R12.6_Sprint 2): originally "physician + location in the lab patient banner for OPD/ER". User redirected it on 2026-11-01 to the **lab grid**: clicking the visit number opens a popover with visit number, physician and full location (clinic name / ER bed / IPD floor + bed), replacing today's hover tooltip that only repeats the visit number. [Confirmed — user + ADO, 2026-11-01]
+  - Rules [Confirmed — user, 2026-11-01]: applies to **both lab and radiology grids**; physician = the physician assigned to the visit (nothing else); ambulatory = physician only, no location; missing values are simply not shown (no "Not recorded"); popover closes with a small X at top right or a click outside (no Esc); the popover shows the clicked row's visit (no "latest visit" wording — the row is already linked to its visit).
+  - Applied 2026-11-01 (rev 31, 11 ACs, title "Show visit physician and location in the lab and radiology grid visit popover"). Also confirmed: IPD location = latest bed of the visit; OPD "clinic name" written without naming its source; popover is read-only. Parent 37216, child 43066. Ticket number still empty. [Confirmed — user + ADO]
+
 ## Results for the summary widgets (verified prelive, 2026-11-01)
 
 - `LR.Investigation.OrderLineId` = `CPOE.Orders.ID`; usually one investigation per order (705 of 114k orders had 2–4). `InvestigationClassificationId` → `LR.SLKP_InvestigationClassification` 5 Lab, 6 MI, 11 Microbiology (`IsMicrobiology` flag is false even for 11). MI investigations only use statuses 1 Not Performed, 2 Performed, 4 Completed.

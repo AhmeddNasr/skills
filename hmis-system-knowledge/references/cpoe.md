@@ -55,7 +55,8 @@ Orders of every kind (medication, laboratory, medical imaging, procedure, packag
 - Orders: `CPOE.MedicationOrderLine` (devtest) already has `OrderingMethodId`, `DisplayName`, `GenericOrderLineId`; `CPOE.MedicationOrderLineDetails` has the same infusion columns. No "given over time" / administration type column on order lines.
 - Administration type lookup `PMGT.SLKP_AdministrationType`: 1 Once · 2 Over time · 3 Diluent. Per clinical form in `PMGT.ClinicalFormAdministrationType` (`ClinicalFormID`, `AdministrationTypeID`, `IsActive`, `IsDeleted`). "Supports type 1 and 2" = the form has both Once and Over time active.
 
-### PBI 49885 — Favorite list & Order sets - Generic Medications [ADO, New, module CPOE]
+### PBI 49885 — Favorite list - Generic Medications [ADO, New, module CPOE]
+- Rev 10 (2026-11-01): rewritten as favorites only, title renamed from "Favorite list & Order sets - Generic Medications". 15 ACs, 3 MSGs. **Never mention order sets in this story** (search, add, public/assigned, previous order sets): the user wants it written as if they do not exist. The only allowed trace is the storage names (`CPOE.OrderSet` with `IsFavorite = 1`, `CPOE.MedicationOrderSetLine`, `OrderSetId` / `MedicationOrderSetLineId`), described as favorite storage. BVC stays Compliance & Risk, BIV "-". [Confirmed — user, 2026-11-01]
 - User (2026-11-01): a favorite must save display name, a **list of trade IDs**, the entered dose incl. infusion duration, and whether the physician chose "given over time" (only when the product supports administration types 1 and 2) — all on "Add to favorites". Ordering from a favorite sends the saved product ID(s) to the Supply Chain "select product and get clinical form setup" API. [Confirmed — user, 2026-11-01]
 
 ## Order storage and statuses (verified prelive, 2026-11-01)

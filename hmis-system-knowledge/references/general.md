@@ -38,7 +38,11 @@
 - Visit type = `VisitClassificationID` (lookup above). Also has `VisitTypeID`, `SpecialtyID` / `SpecialtyEnName` / `SpecialtyArName`, `MainSpecialityID` (+ names), `RelatedIPDVisitID`, `ArrivalDateTime`, `DischargeDate`, `MergedDate`, `VisitStatusID`, `StatusID`.
 - **No episode table or episode column exists** in the DB (only billing `EpisodeType` lookups and report views). How the physician portal groups visits into episodes is not confirmed — describe it as the existing episode grouping, don't define it. [Confirmed — prelive DB search, 2026-11-01]
 - Visit status = `VisitStatusID` → `VisitMgt.SLKP_VisitStatus`: 1 Planned, 2 Arrived (تم الوصول), 3 Cancelled, 4 In Progress, 5 Discharged, 6 On Leave, 7 Finished. In prelive only 1, 2, 3 and 5 are used on visits. "Arrived IPD/ER visit" = `VisitClassificationID` 2/4 with `VisitStatusID` 2. [Confirmed — prelive DB, 2026-11-01]
-- The visit's physician is not a column on `VisitMgt.Visit` (no Physician/Doctor/Consultant column); it lives elsewhere. [Unconfirmed where]
+- The visit's physician is not a column on `VisitMgt.Visit`. Where it lives, per visit type [Confirmed — prelive DB, 2026-11-01]:
+  - OPD: `VisitMgt.VisitAppointment.PhysicianEnName/ArName` (+ `ClinicInstanceID`). Its `LocationEnName` is the **hospital** ("Andalusia jeddah Hospital"), not the clinic. No clinic-name table/column was found in the prelive DB (clinic setup likely lives in another DB). [Unconfirmed where clinic name comes from]
+  - ER: `VisitMgt.VisitTriageDetail` (`AssignedDroctorEnName/ArName` — sic, `BedEnName` e.g. "Bed (RZ1-B14)", `ZoneEnName` e.g. "Red Zone", `RoomEnName` = "Emergency department"). View `VisitMgt.VM_VW_LatestVisitDoctorDetails` (`VisitID`, `AssignedDroctorEnName/ArName`).
+  - IPD: admitting doctor `VisitMgt.VisitAdmission.AdmittedDoctorEnName/ArName` (+ `AdmittedDoctorLog`); treating physicians `VisitMgt.VisitTreatingPhysicianAssignment` (`PhysicianNameEn`, `AssignmentDate`, `EndAssignmentDate`). Bed history `VisitMgt.VisitPatientAccommodation` (`FloorNameEn` e.g. "Ninth Floor", `RoomEnName` ward e.g. "9th-Floor Ward", `ZoneEnName` room e.g. "ROOM-910", `BedEnName` e.g. "BED-910", `AccommodationStartDateTime/EndDateTime`).
+  - Ambulatory: `VisitMgt.AmbulatoryVisitDetails.PhysicianID`.
 - The query tool rejects any SQL containing the word `merge` (even inside `LIKE '%Merge%'`) — use `'%erged%'`. [Confirmed — 2026-11-01]
 
 ## Azure DevOps conventions
