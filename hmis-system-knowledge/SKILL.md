@@ -20,7 +20,7 @@ It has two jobs, and **both are mandatory**:
 |------|---------------|------------------------------------------------------|
 | `references/general.md` | Facts that apply across modules | configurations, database conventions, query tools, shared lookups (visit classification), ADO conventions, story-writing rules — **always read** |
 | `references/corrections-log.md` | Every correction the user has made | **always read** |
-| `references/cpoe.md` | CPOE / Order Entry specifics | ordering anything (medication, laboratory, medical imaging, procedure, package orders), Order Entry screen, favorite list, order set, treatment plan / CPG, product classifications, `CPOE.*` tables |
+| `references/cpoe.md` | CPOE / Order Entry specifics | MediSpan, drug alerts, allergy alert, override, ordering anything (medication, laboratory, medical imaging, procedure, package orders), Order Entry screen, favorite list, order set, treatment plan / CPG, product classifications, `CPOE.*` tables |
 | `references/lab-and-rad.md` | Lab and Rad (`LR` schema) specifics | lab or radiology results, result statuses and types, reference ranges, normality, completing results, lab grid, visit popover, `LR.*` tables |
 | `references/physician-desktop.md` | Physician Desktop / physician portal specifics | floating control bar, quick add, patient banner, physician workspace design, feature 34938 unassigned-visit restrictions |
 | `references/vital-signs.md` | Vital signs (`VS` schema) | vital signs, vitals widget, normal ranges, high/low status, SpO₂ / pain / consciousness scales, `VS.*` tables |
