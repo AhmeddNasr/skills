@@ -187,6 +187,18 @@ Columns: `Name` (**not** `Key`), `Value`, `Desc`, `MinValue`, `MaxValue`, `UnitE
   - Stories use the status "Validated", but `SLKP_DonationBloodUnitStatus` has no Validated row (it has Draft 5, Approved 2).
   - 10493 (blood ordered without a blood group is not accepted) overlaps with 11394's default group.
 
+## Open business needs (still to be written as stories) — `[Confirmed — user, 2026-11-02]`
+
+1. **Automatic collection labels for donated bags.** At donation, staff take sample tubes from the bag for the post-donation investigations. Those tubes need labels printed automatically, so analyzers can post results straight into the system and less is entered by hand. Before writing it, check how it differs from the 8 bag labels in 25562. [Unconfirmed — 25562 may cover bag labels only, not sample-tube labels]
+2. **Group units in the blood work list.** Each unit creates its own order instance (one `BloodOrder` row per `OrderlineInstanceID`), so reserving 4 bags for one patient means repeating the reserve once per instance. Staff need to reserve several units in one action. Related: 11417 (New), a setting for one instance per order.
+3. **Automatic rejection of bags and/or donors from investigation results**, for both pre- and post-donation investigations. Related: feature 35508 (post-donation blocking configurations, no child items yet).
+4. **Find a donor by DIN in the donor list.** Today staff search for the donor, expand the row, guess which bag is the right one and select it.
+5. **Reorder the donation screen steps.**
+   - Today the order is: questionnaire → consent → pre-donation (this part is fine) → donation → post-donation → splitting.
+   - The donation form asks for the blood group, drawing start and end times and other values that are only known after post-donation. The blood group is unknown until some post-donation tests are done.
+   - Splitting often has to happen before post-donation finishes: it must be done within 8 hours, but NAT runs only twice a week.
+6. **The blood group ignores the post-donation result.** The donor/unit blood group does not take the value from the post-donation blood group test ("Donor Blood Group & Rh"). This needs investigation. [Not yet checked in the DB]
+
 ## Gotchas
 
 - Typos in names: `LabInvistgationResult`, `SLKP_InvistgationStatus`, `BloodComponant`, `ComponantRPCID`, "Plazma", `SKLP_` prefix on 3 lookups, `Difractable`.
