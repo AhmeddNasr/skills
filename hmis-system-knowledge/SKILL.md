@@ -24,6 +24,7 @@ It has two jobs, and **both are mandatory**:
 | `references/lab-and-rad.md` | Lab and Rad (`LR` schema) specifics | lab or radiology results, result statuses and types, reference ranges, normality, completing results, lab grid, visit popover, `LR.*` tables |
 | `references/physician-desktop.md` | Physician Desktop / physician portal specifics | floating control bar, quick add, patient banner, physician workspace design, feature 34938 unassigned-visit restrictions |
 | `references/vital-signs.md` | Vital signs (`VS` schema) | vital signs, vitals widget, normal ranges, high/low status, SpO₂ / pain / consciousness scales, `VS.*` tables |
+| `references/blood-bank.md` | Blood Bank (`BloodBank` schema) + transfusion orders | blood bank, blood/transfusion order, blood unit/bag, reserve, cross-match, dispense, return, discard, compatibility matrix, donor, donation, questionnaire, consent, diffraction, split, external blood units, ISBT 128 / DIN, eMAR blood administration, `BloodBank.*`, `CPOE.Transfusion*` tables |
 
 Add a new `references/<module>.md` when work starts on a module that has no file yet (e.g. `physician-desktop.md`, `billing.md`), and add a row with its topics to the table above.
 

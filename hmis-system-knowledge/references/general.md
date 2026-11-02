@@ -21,6 +21,9 @@
 - The `execute_query` tool's SQL parser rejects `SELECT TOP n` — use the tool's `limit` parameter instead. `[Key]`-style bracket quoting works. [Confirmed — prelive DB, 2026-10-31]
 - Schema names are PascalCase/uppercase (e.g. `CPOE`, `Shared`, `PhysicianDesktop`, `VisitMgt`, `LR`, `Billing`). Lookup tables are prefixed `SLKP_` (e.g. `Shared.SLKP_VisitClassification`). Find tables with `information_schema.tables` and a `LIKE` filter. [Confirmed — prelive DB, 2026-10-31]
 - Several modules have their own copy of common lookups (e.g. `SLKP_VisitClassification` exists in `Shared`, `VisitMgt`, `LR`, `CS`, `Finance`, `SC`; `SLKP_ProductClassification` in `Shared`, `CPOE`, `Billing`, `PMGT`, `SC`). Check the module's own schema first. [Confirmed — prelive DB, 2026-10-31]
+- `execute_query` rejects a top-level `UNION` ("Query must be a SELECT statement. Found: Union"). Wrap it instead: `SELECT * FROM (… UNION ALL …) x` works. `CONVERT(varchar, date, 120)` inside string concatenation fails to parse, so return the dates as separate columns. `STRING_AGG(...) WITHIN GROUP (ORDER BY …)` and `sys.tables`/`sys.partitions` row counts work. [Confirmed — prelive DB, 2026-11-02]
+- "AHJ prelive" = `hmis-prelive-db` (Andalusia Hospital Jeddah; `BloodBank` label config FIN/license `H1088`). [Confirmed — prelive DB, 2026-11-02]
+- Not every module's configuration table uses `Key`: `BloodBank.Configuration` uses `Name` / `Value` / `Desc` (+ `MinValue` / `MaxValue` / `UnitEnName`), and some names contain spaces (e.g. `Next Donation`). [Confirmed — prelive DB, 2026-11-02]
 
 ## Shared lookups
 
@@ -50,6 +53,7 @@
 - Project `HMIS`, area path `HMIS\Scrum01`. PBIs carry `Custom.Module` (seen values: `CPOE`, `Physician Desktop`). [Confirmed — PBIs 32423, 49468]
 - Other people edit PBIs between our saves (tags, ticket number, business value). Re-read a work item before overwriting Description/Acceptance Criteria if time has passed. [Confirmed — PBI 49468 rev 2→8, 2026-10-31]
 - `Custom.Module` also seen: `Clinical Notes` (PBI 37270). [Confirmed — ADO, 2026-11-01]
+- More `Custom.Module` values: `Blood Bank` (a few items use `Blood bank`), `Nurse Portal`, `Lab and Rad`, `Ticket`. To list a module's items, run WIQL with `[Custom.Module] CONTAINS '<word>'`. The `ado_query_work_items` tool returns IDs only, and `ado_get_work_item` responses are very verbose (identity blobs, AI review summaries), so hand bulk reads to a subagent. [Confirmed — ADO, 2026-11-02]
 - Direct TFS REST calls from the shell (`Invoke-RestMethod -UseDefaultCredentials` to `http://ahq-tfs-azure/DefaultCollection/...`) now return 401, even outside the sandbox; they worked on 2026-10-28. Use the ADO MCP tools (`ado_get_work_item`, `ado_update_work_items`). Large reads get saved to a tool-results JSON file — parse it with node instead of reading it inline. [Confirmed — 2026-11-01]
 
 ## Security / permissions
@@ -58,7 +62,7 @@
 - In stories, name a permission by its `Security.Permission.Name` and its business entity, e.g. "Order on any visit" (Order Entry). [Confirmed — PBIs 34941, 35258, 37270]
 - Permissions by area (devtest, `ID — Name`): [Confirmed — devtest DB Security.Permission, 2026-11-01]
   - **Order Entry** entity: `100001 View Order Entry Screen`, `100002 Order Laboratory Investigations`, `100003 Order MI Investigations`, `100004 Order Procedure Investigations`, `100007 Order Medication`, `500057 Order on any visit`, `100521 order on discharged visit`, `100520 order with past date`, `100006/100015 View Order Sets`. Also `500003 Order Packages` (Order Entry Packages), `500012 Order fluids` (Medication Investigations).
-  - **Order Management** entity: admission/discharge order, home medication, blood orders, `11000000186/187 Edit Requesting Physician - Admission/Discharge` (PBI 34941).
+  - **Order Management** entity: admission/discharge order, home medication, blood orders (IDs in `blood-bank.md`), `11000000186/187 Edit Requesting Physician - Admission/Discharge` (PBI 34941).
   - **ClinicalNotes** entity: `444488 Add Clinic Note`, `11000000188 Add clinical notes to unassigned OPD visits` (PBI 37270), `444486 View Clinical Notes`, `444492 Reply Note`.
   - **ClinicalSheet** entity: `444504 Add Sheet`, `11000000189 Add clinical sheets to unassigned OPD visits` (PBI 37270), `444501 View Clinical Sheet`; plus one permission per sheet template (e.g. `SickLeave`, `ER Physician Assessment`).
   - **ProblemCard** entity (diagnoses): `400002 Add Patient Problem`, `444506 Edit Patient Problem`, `444527 Manage Patient Problems`, `11000000185 Manage diagnosis on unassigned OPD visit` (PBI 35258).
