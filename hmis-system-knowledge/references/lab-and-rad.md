@@ -47,3 +47,8 @@
 - Microbiology sensitivities: `LR.AntibioticSensistivityResult` (`Resistance` → `LR.SLKP_AntibioticSensistivity` 1 Resistant, 2 Sensitive, 3 Intermediate, 4 Not tested; `MIC`).
 - Radiology report = free text in `LR.InvestigationResult.ReportPrintableNotes`; no components, no separate Findings/Impression fields.
 - Existing views in schema `PatientSummery`: `Vw_CPOE_PatientSummary_LRDetails`, `VW_CPOE_PatientSummary_LabFinal_Details`, `VW_CPOE_PatientSummary_RadFinal_Details`, `VW_CPOE_PatientSummary_LR_Investigation`, `Vw_CPOE_PatientSummary_ProcedureOrderlines`, `CPOE_VW_MedicationPatientSummery`.
+
+## Radiology result timing (prelive, 2026-10-15 → 2026-11-02, 27 completed MI investigations) [Confirmed — prelive DB, 2026-11-03]
+- Statuses come from `LR.InvestigationHistory` (`StatusID`, `ActionTypeId` → `LR.SLKP_ActionType` with `EnName`, not `Name`): 8 Perform → `StatusID` 2; 11 Add Final Result → `StatusID` 4 in the **same row**. For rad, adding the final result completes the investigation in one step; no provisional results seen.
+- Result saved → completed: ~1 s (same action). Perform → complete: median ~1 min (13 s – 6.7 h; 19 of 27 under ~3 min).
+- `RadReport` NPHIES send happens ~2–20 s after completion. 9 of 27 completions had no `RadReport` tracking row at all, with both short and long perform→complete times, so timing did not explain the missing sends.

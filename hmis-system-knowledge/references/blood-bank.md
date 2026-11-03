@@ -197,7 +197,16 @@ Columns: `Name` (**not** `Key`), `Value`, `Desc`, `MinValue`, `MaxValue`, `UnitE
    - Today the order is: questionnaire → consent → pre-donation (this part is fine) → donation → post-donation → splitting.
    - The donation form asks for the blood group, drawing start and end times and other values that are only known after post-donation. The blood group is unknown until some post-donation tests are done.
    - Splitting often has to happen before post-donation finishes: it must be done within 8 hours, but NAT runs only twice a week.
-6. **The blood group ignores the post-donation result.** The donor/unit blood group does not take the value from the post-donation blood group test ("Donor Blood Group & Rh"). This needs investigation. [Not yet checked in the DB]
+6. **The blood group ignores the post-donation result.** The donor/unit blood group does not take the value from the post-donation blood group test ("Donor Blood Group & Rh"). Checked in prelive [Confirmed — prelive DB, 2026-11-02]:
+   - Where the result lives: `LR.Investigation` (`DonationID`, `InvestigationDonationTypeID` = 2) → `LR.InvestigationResult` → `LR.InvestigationResultComponent`. Current format is two components, `ABO-BLOOD GROUP` ("GROUP O") and `RH (ANTI-D)` ("POSITIVE"). Between Aug 2025 and Feb 2026 a combined `BLOOD GROUP & RH` component was also used ("O RhD positive").
+   - `Donation.BloodTypeID` is NULL on every donation that has a result (about 5,100), so the donation-level group is never filled.
+   - All 3,950 non-legacy collected units (`DonationBloodUnit`, `ActionID` 1) got their `BloodTypeID` **before** the result existed, and `DonationBloodUnitLog` shows it never changed afterwards. The group is the value typed on the donation form, not the lab result.
+   - 30 collected units (and about 27 diffracted or split children) still hold a group that differs from their lab result. About 400 donations have a result but the donor's `BloodTypeID` is NULL, so the result does not reach `Donor` either.
+7. **Dispensing overwrites the stock unit's blood group with the recipient's group** (found while checking item 6, not yet raised with the business) [Confirmed — prelive DB, 2026-11-02]:
+   - `BloodUnit.Serial` = `DonationBloodUnit.SerialNumber` (unique both sides). 279 donated stock units (8%) have a `BloodUnit.BloodTypeID` that differs from their donation unit, the donor, the lab result **and their own product** (`BloodProduct.BloodTypeID`). The donation unit's group never had that value.
+   - 228 of them are Dispensed. For 216 of those, the stock group equals the order's `BloodOrder.PatientBloodTypeID`, and for 11 more it equals `ProductBloodTypeID`. Example: an O+ FFP given to an O− patient is now stored as O−.
+   - Most are diffracted (150) or split (125) units. 67 FFP O+ → O− cases cluster in 2026-04-14..27.
+   - Impact: the stock record and any report or traceability by blood group show the recipient's group, not the bag's.
 
 ## Gotchas
 

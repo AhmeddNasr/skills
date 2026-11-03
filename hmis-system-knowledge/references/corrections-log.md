@@ -2,6 +2,8 @@
 
 One line per correction, newest first. Format: `YYYY-MM-DD — [module] Assumed: … → Actually: … (context)`. The fact itself also goes in the module file.
 
+- 2026-11-03 — [CPOE] Assumed: CPOE sends more than one approval status to `ProcessPredictedApproval`. → Actually: only status 4 (Approved); never mention any other status or `ApprovedQuantity`. (PBI 49432)
+- 2026-11-03 — [CPOE/NPHIES] Assumed: no radiology-result payload exists in `CPOE.NphiesCSRequestTracking` (only OrderEvent/OrderEventUpdate/LabResult seen in a 4 h export). → Actually: rad results use `PayloadType = 'RadReport'`; the export window just had none. Check the full table before saying a payload type doesn't exist.
 - 2026-11-02 — [CPOE] Assumed: PRN is excluded from active medications like STAT. → Actually: PRN stays visible when active, decided by status only, since it has no duration. (PBI 52819)
 - 2026-11-02 — [CPOE] Assumed: 52819 active-medication logic is for the Patient summary widget tabs and needs an "ending soon" display + a no-end-date rule. → Actually: it is the Order entry "active medications" checkbox; logic only; never mention no-end-date orders. (PBI 52819)
 - 2026-11-02 — [CPOE] Assumed: the very high allergy override block also needs a server-side rejection AC. → Actually: not applicable; screen-level disable only. (PBI 52816)
