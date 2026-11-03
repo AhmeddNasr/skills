@@ -1,73 +1,60 @@
 ---
 name: hmis-system-knowledge
-description: Living knowledge base of how the HMIS system actually works — database tables and configuration keys, lookups, screens, module terminology, feature history by PBI, and past corrections. Load it at the START of any HMIS work (writing, reformatting or reviewing a user story or PBI, investigating an ADO work item, querying an HMIS database, analysing a module such as CPOE, Physician Desktop, Lab and Rad, Billing) and read the module's reference file before drafting anything. It is self-updating — after every lookup (DB query, ADO read, code search) and every time the user corrects an assumption, append what was learned before the turn ends.
+description: The single knowledge base for HMIS / DotCare — what we learned while working (configuration keys, lookups, screens, terminology, feature history by PBI, past corrections) plus the DotCare database study (schema catalog, FK and application links, visit/product/package flows, caches, SQL objects, migration conventions) with lookup scripts. Load it at the START of any HMIS work: writing, reformatting or reviewing a user story or PBI, investigating an ADO work item, querying an HMIS database, schema or dependency questions, business-flow reviews, SQL or migration design, or analysing a module such as CPOE, Physician Desktop, Lab and Rad, Blood Bank, Billing. It is self-updating — after every lookup (DB query, ADO read, code search) and every user correction, record what was learned before the turn ends.
 ---
 
 # HMIS System Knowledge
 
-## Purpose
+Two mandatory jobs: **read** what is known before working, and **write back** what you learned before the turn ends. Read only what the task needs: this file is the index.
 
-This skill is the memory of what we have learned about the HMIS system while working together. It grows with every investigation and every correction, so the same mistake is not made twice and the same lookup is not repeated.
+## Step 1 — Read (token-light)
 
-It has two jobs, and **both are mandatory**:
+1. **Always** read the `## Don't repeat` section at the top of `references/general.md`, and its `## Writing stories about how HMIS is built` section when writing a story.
+2. For each module the work touches (use the table; modules overlap, e.g. lab orders live in `cpoe.md`), read that file's `## Don't repeat` section in full.
+3. Then **search, don't read whole files**: Grep `references/` for the work's key terms (PBI IDs, screen, table, configuration and feature names), read the matching `##` sections. Read a whole module file only when the work is broad or the search finds little. Use the Grep tool (`grep -i` aborts in this Git Bash).
+4. For schema/structure questions, run the DB scripts (below) before querying the live DB. Never open the big JSON files under `db/references` directly.
+5. If a fact is **Unconfirmed** and matters, verify it (DB query, ADO read) or ask the user, then update its status.
 
-1. **Read** — before writing or analysing anything, read what is already known.
-2. **Write back** — after looking something up or being corrected, record it here before the turn ends.
+| File | Topics |
+|------|--------|
+| `references/general.md` | configurations (DB values, no screens), configuration tables, query-tool quirks, shared lookups (visit classification, visits, visit status, physician per visit type), ADO conventions, `Custom.Module` values, permissions (`Security.*`), story-writing rules |
+| `references/cpoe.md` | MediSpan, drug/allergy alerts, override, ordering (medication, lab, imaging, procedure, package), Order Entry screen, favorite list, order set, treatment plan / CPG, product classifications, NPHIES CS tracking, internal (predicted) approval → VM, `CPOE.*` tables |
+| `references/lab-and-rad.md` | lab/rad results, statuses and types, reference ranges, normality, completing results, lab grid, visit popover, `LR.*` |
+| `references/physician-desktop.md` | floating control bar, quick add, patient banner, episodes, widgets, feature 34938 unassigned-visit restrictions |
+| `references/vital-signs.md` | vitals, vitals widget, normal ranges, high/low, SpO₂ / pain / consciousness scales, `VS.*` |
+| `references/blood-bank.md` | blood bank, transfusion orders, units/bags, reserve, cross-match, dispense, return, discard, compatibility, donor, donation, questionnaire, consent, split, external units, ISBT 128 / DIN, eMAR blood, `BloodBank.*`, `CPOE.Transfusion*` |
+| `references/corrections-log.md` | dated history of every correction (each one is also in its module's `## Don't repeat`) — search only |
+| `db/GUIDE.md` | full DotCare DB study guide — read for DB flow studies, dependency/impact analysis, SQL scripts, migrations |
+| `db/references/schemas/<Schema>.md` | per-schema worksheet (tables, setup/domain candidates) — read the one schema you need |
+| `db/references/*.md` | `core-flows` (visit/product/package identities), `module-map`, `database-flow-study`, `configuration-audit`, `cache-writers`, `reversal-flows`, `review-procedure`, `action-script-design`, `migration-conventions`, `hospital-structure-rules` (HSM), `security-flow`, `*-Integration.md` |
 
-## Reference Files
+Add `references/<module>.md` (with a `## Don't repeat` section) when a new module starts, and add a row above.
 
-| File | What it holds | Topics (read it when the work touches any of these) |
-|------|---------------|------------------------------------------------------|
-| `references/general.md` | Facts that apply across modules | configurations, database conventions, query tools, shared lookups (visit classification), ADO conventions, story-writing rules — **always read** |
-| `references/corrections-log.md` | Every correction the user has made | **always read** |
-| `references/cpoe.md` | CPOE / Order Entry specifics | MediSpan, drug alerts, allergy alert, override, ordering anything (medication, laboratory, medical imaging, procedure, package orders), Order Entry screen, favorite list, order set, treatment plan / CPG, product classifications, NPHIES CS send tracking / integration errors, `CPOE.*` tables |
-| `references/lab-and-rad.md` | Lab and Rad (`LR` schema) specifics | lab or radiology results, result statuses and types, reference ranges, normality, completing results, lab grid, visit popover, `LR.*` tables |
-| `references/physician-desktop.md` | Physician Desktop / physician portal specifics | floating control bar, quick add, patient banner, physician workspace design, feature 34938 unassigned-visit restrictions |
-| `references/vital-signs.md` | Vital signs (`VS` schema) | vital signs, vitals widget, normal ranges, high/low status, SpO₂ / pain / consciousness scales, `VS.*` tables |
-| `references/blood-bank.md` | Blood Bank (`BloodBank` schema) + transfusion orders | blood bank, blood/transfusion order, blood unit/bag, reserve, cross-match, dispense, return, discard, compatibility matrix, donor, donation, questionnaire, consent, diffraction, split, external blood units, ISBT 128 / DIN, eMAR blood administration, `BloodBank.*`, `CPOE.Transfusion*` tables |
+## DB study (`db/`) — reference, not proof
 
-Add a new `references/<module>.md` when work starts on a module that has no file yet (e.g. `physician-desktop.md`, `billing.md`), and add a row with its topics to the table above.
+The DB study is a dated (Oct 2026), permission-limited snapshot. Use it to know where to look; verify against the live DB (`hmis-prelive-db`, `hmis-devtest-db`, `anc-prelive-db`), code or the user before relying on it. If they conflict, the live source wins and you tell the user. When citing it, say "per the DB study, not yet verified".
 
-**Files are split by where a fact lives, not by which story found it.** A Lab story may need `cpoe.md` (lab orders are placed in Order Entry), and a CPOE story may need `lab-and-rad.md`. Modules overlap, so never read only "the module's" file.
+Scripts (run them from `db/`):
 
-## Step 1 — Read Before Working
+- `python -I scripts/inspect_schema.py --table CPOE.Configuration` · `--schema VisitMgt` · `--neighbors VisitMgt.VisitService` · `--search PackageServiceID` · `--required` (with `--table`) · `--readers <table>` · `--object <view/proc>` · `--limit n` (check `Truncated`)
+- `python -I scripts/trace_dependencies.py --root VisitMgt.Visit --direction incoming --depth 2` — declared FK dependencies only, not a delete planner
+- `python -I scripts/inspect_events.py --event MPI_PatientMerged` — cache/event subscriptions
+- `python -I scripts/read_schema_evidence.py --kind samples|setup-vocabularies --schema HSM` — one schema's samples or setup vocabulary
+- `python -I scripts/check_skill.py` — self-test of the DB study
 
-1. Read `references/general.md` and `references/corrections-log.md` in full (always, whatever the module).
-2. Read **every** module file whose Topics column touches the work, not just the file for the story's `Custom.Module`. When in doubt, read it — the files are short.
-3. Search **all** reference files for the work's key terms (screen names, table names, feature names, PBI IDs), e.g. `grep -ril "favorite\|order entry" references/`. Read any file that matches, even if its module seems unrelated.
-4. Use what is there. If a fact is marked **Unconfirmed** and it matters for the work, verify it (DB query, ADO read) or ask the user — then update its status.
+Key invariants (details in `db/GUIDE.md` and `db/references/core-flows.md`): package header VisitService ID, PatientPackage purchase ID, master Package ID and member billing transaction ID all differ; `OrderlineID` is polymorphic (check order family, visit, product, classification before joining); matching numeric IDs are not relationship evidence; `IsDeleted` alone is not full cancellation; HSM assignment cache routing needs `AssignmentTypeID` and `AssignmentClassificationID`. Read-only: bounded SELECTs, no PHI, no NOLOCK as proof, no writes.
 
-## Step 2 — Write Back After Learning
+## Step 2 — Write back
 
-**Trigger — write back whenever any of these happened in the turn:**
+Write back when, this turn, a DB lookup showed structure or reference data, an ADO item showed how a feature works, code showed an implementation, the user stated a fact, or **the user corrected an assumption** (highest value — always record).
 
-- A database lookup returned something about structure or reference data (table names, columns, configuration keys and value formats, lookup values, IDs).
-- An ADO work item was read and revealed how a feature works, which PBI introduced it, or its current state.
-- A code search or file read showed how something is implemented.
-- **The user corrected an assumption** (terminology, how something is configured, how a screen behaves, what a story should or should not say). Corrections are the highest-value entries — always record them.
-- The user stated a fact about the system or about how they want it described.
+1. Pick the file by **where the fact applies**: cross-module or a pattern → `general.md` (when unsure, here); one module → that module's file; DB-study gaps or errors → the module file for that schema (e.g. `VisitMgt` → `general.md`, `CPOE` → `cpoe.md`), noting "corrects DB study `<file>`". Update existing entries instead of duplicating; fix or remove wrong ones. Re-read a file just before editing it (other sessions edit too).
+2. **Correction** → add the line to the module's `## Don't repeat` section **and** to `corrections-log.md` (newest first): `YYYY-MM-DD — [module] Assumed: … → Actually: … (PBI)`. Also fix the fact itself in the module file.
+3. Tag each fact `[Confirmed — <source>, <YYYY-MM-DD>]` or `[Unconfirmed — <why>]`. One fact per bullet, names in `code`, no narrative.
+4. Tell the user in one line ("Added to hmis-system-knowledge: …").
 
-**How to write back:**
+**Never record:** secrets or signed URLs (key name + "URL" only), patient data / PHI, real visit or patient IDs, employee names tied to records, one-conversation details (draft wording), large data dumps.
 
-1. Choose the file by **where the fact applies**, not by which story found it:
-   - Applies to more than one module, or is a pattern (how configurations work, naming conventions, shared lookups, story-writing rules) → `general.md`. **When unsure, use `general.md`.**
-   - Only true inside one module (a specific table, key, screen or PBI) → that module's file.
-   - Learned during a story for another module (e.g. a CPOE fact found while writing a Lab story) → still goes in the module where it lives, and add any new topic words to that file's row in the table above.
-   Update an existing entry rather than adding a duplicate; fix or delete entries that turn out to be wrong. If a module-file fact turns out to apply elsewhere too, move it to `general.md`. Other sessions may be editing these files at the same time — re-read a file just before editing it.
-2. For a correction, also add a dated line to `corrections-log.md`.
-3. Mark each fact with its status and source:
-   - `[Confirmed — <source>, <YYYY-MM-DD>]` e.g. `[Confirmed — prelive DB CPOE.Configuration, 2026-10-31]`, `[Confirmed — user, 2026-10-31]`, `[Confirmed — PBI 32423]`
-   - `[Unconfirmed — <why we think so>]` for inferences
-4. Keep entries short — one fact per bullet, names in `code`, no narrative.
-5. Do it in the same turn as the lookup or correction, not "later". Mention it in one line to the user ("Added to hmis-system-knowledge: …").
+## With `user-story-template`
 
-## Never Record
-
-- Secrets or signed URLs (some configuration `Value`s contain tokens/`sig=` links — record only the key name and "URL").
-- Patient data or any PHI, employee names tied to records, or real visit/patient IDs.
-- Things that only mattered to one conversation (draft wording, temporary decisions).
-- Large data dumps — record the shape and a few representative values instead.
-
-## Applying the Knowledge in Stories
-
-When this skill is used together with `user-story-template`, the rules in `references/general.md` § "Writing stories about how HMIS is built" override generic template habits (e.g. configurations are database values, not admin screens).
+The rules in `general.md` § "Writing stories about how HMIS is built" and every `## Don't repeat` section override generic template habits (e.g. configurations are database values, not admin screens).

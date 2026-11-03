@@ -1,5 +1,18 @@
 # HMIS — Lab and Rad (LR schema)
 
+## Don't repeat (past corrections — always read this section)
+
+- 2026-11-01 — [Lab and Rad] Assumed: popover is lab-only, shows "Not recorded" for missing values, closes on Esc, physician differs by visit type (appointment/triage/admitting), ambulatory out of scope, needs an AC about picking the investigation's visit over the latest. → Actually: lab + rad grids; hide missing values; small X + click outside; physician = the visit's assigned physician; ambulatory shows physician only; just say it shows the clicked visit's data. (PBI 37217)
+- 2026-11-01 — [Lab and Rad] Assumed: restricted results need in-row tooltips and separate messages for each case (5 messages). → Actually: only 2 messages, both on selecting Complete: unauthorized → "can only be saved by authorized users" (also enforced server-side if the screen check is bypassed); authorized without MOH confirmed → "will be saved as Awaiting MOH confirmation". (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: the "MOH confirmed" checkbox is stored with the result. → Actually: it is not saved; it only lets the entered value be kept on that completion. (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: the restriction re-check happens on save. → Actually: it runs before saving in the popup, and a user without the permission cannot save a restricted result. (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: blood bank exclusion needs its own AC. → Actually: leave blood bank out of the story entirely. (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: restricted-result rules apply on save (block unauthorized saves, force analyzer results to provisional, recalculate normality). → Actually: provisional and final save normally for everyone; the only restriction is on complete, using the normality saved with the result. (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: "MOH confirmed" needs a release popup and a history log. → Actually: the checkbox only decides whether the value or the placeholder is saved on complete. (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: stories must list every place a placeholder result is shown (portal, NPHIES, reports, history). → Actually: once the placeholder is the saved value, no per-place ACs are needed. (PBI 34255)
+- 2026-11-01 — [Lab and Rad] Assumed: the restricted-component config needs a setup screen and the feature needs 3 PBIs. → Actually: one DB table in `LR`, one PBI. (PBI 34255)
+
+
 ## Databases
 
 - AHJ prelive = MCP `hmis-prelive-db` → database `AHJ.Env.HCMS_prelive` on `AHJ-HMISDBTEST1`. ANC prelive = `anc-prelive-db` → `ANC.Env.HCMS.Prelive`. [Confirmed — prelive DB, 2026-10-31]

@@ -1,5 +1,18 @@
 # CPOE / Order Entry
 
+## Don't repeat (past corrections — always read this section)
+
+- 2026-11-03 — [CPOE] Assumed: CPOE sends more than one approval status to `ProcessPredictedApproval`. → Actually: only status 4 (Approved); never mention any other status or `ApprovedQuantity`. (PBI 49432)
+- 2026-11-03 — [CPOE/NPHIES] Assumed: no radiology-result payload exists in `CPOE.NphiesCSRequestTracking` (only OrderEvent/OrderEventUpdate/LabResult seen in a 4 h export). → Actually: rad results use `PayloadType = 'RadReport'`; the export window just had none. Check the full table before saying a payload type doesn't exist.
+- 2026-11-02 — [CPOE] Assumed: PRN is excluded from active medications like STAT. → Actually: PRN stays visible when active, decided by status only, since it has no duration. (PBI 52819)
+- 2026-11-02 — [CPOE] Assumed: 52819 active-medication logic is for the Patient summary widget tabs and needs an "ending soon" display + a no-end-date rule. → Actually: it is the Order entry "active medications" checkbox; logic only; never mention no-end-date orders. (PBI 52819)
+- 2026-11-02 — [CPOE] Assumed: the very high allergy override block also needs a server-side rejection AC. → Actually: not applicable; screen-level disable only. (PBI 52816)
+- 2026-11-01 — [CPOE] Assumed: favorite items of non-allowed classifications need an AC saying they are hidden under any filter. → Actually: not a real case; dropped. The real edge case is the favorite list filter mirroring a search-filter classification that isn't allowed. (PBI 49468)
+- 2026-10-31 — [General/CPOE] Assumed: configurations are set on an admin screen (wrote admin USER steps, a Data Sections field and a "saves configuration" AC). → Actually: configurations are rows in `CPOE.Configuration`, set in the database; no screen. (PBI 49468)
+- 2026-10-31 — [CPOE] Assumed: the new whitelist configuration is keyed by visit classification like its parent rule. → Actually: it is one system-wide configuration that defines how the rule behaves. (PBI 49468)
+- 2026-10-26 — [CPOE] Clarified: CPG and treatment plan are the same; stories must say "treatment plan tab" only. (PBI 49468)
+
+
 Orders of every kind (medication, laboratory, medical imaging, procedure, package) are placed through CPOE Order Entry, so Lab, Rad and Pharmacy stories often need this file too. General configuration patterns live in `general.md`; this file holds only CPOE-specific keys and tables.
 
 ## Terminology

@@ -1,5 +1,12 @@
 # HMIS — General / Cross-Module
 
+## Don't repeat (past corrections — always read this section)
+
+- 2026-11-01 — [ADO] Assumed: PBI 41635 had no parent because `ado_get_work_item` returned no `System.Parent`. → Actually: parent is 41610; the field only appears in some responses. Check relations before saying an item has no parent. (PBI 41635)
+- 2026-11-01 — [All stories] Never add an Open Points section to a story; ask in chat instead. (PBI 51348)
+- 2026-10-31 — [General/CPOE] Assumed: configurations are set on an admin screen (wrote admin USER steps, a Data Sections field and a "saves configuration" AC). → Actually: configurations are rows in `CPOE.Configuration`, set in the database; no screen. (PBI 49468)
+
+
 ## Writing stories about how HMIS is built
 
 - **Configurations are database values, not screens.** A "configuration" is a row in a module's configuration table (e.g. `CPOE.Configuration`), set directly in the database. There is no admin screen or setup UI. [Confirmed — user, 2026-10-31]

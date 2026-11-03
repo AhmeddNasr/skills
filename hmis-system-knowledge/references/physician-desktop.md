@@ -1,5 +1,17 @@
 # Physician Desktop / Physician Portal
 
+## Don't repeat (past corrections — always read this section)
+
+- 2026-11-01 — [Physician Desktop] Assumed: banner menu actions (Print Wristband, Attachment) are out of scope. → Actually: the ⋯ menu has Print wristband, Attachment and Print summary, each opening the existing dialog. (PBI 41634)
+- 2026-11-01 — [Physician Desktop] Assumed: episode rows show date range + specialty; visit type is multi-select; filters hide non-matching visits inside an episode; search matches dates; Episode history replaces Clinical notes; only widgets reload on episode change. → Actually: rows show classification, date+time, physician (+ count for folders); visit type is a single-choice dropdown; any match keeps the whole episode; search = physician/specialty only; no Clinical-notes replacement rule; the patient banner reloads too. (PBI 41635)
+- 2026-11-01 — [Physician Desktop] Assumed: Quick add belongs in the floating bar story and visible Orders is always enabled. → Actually: no Quick add in 46813; Orders is disabled with "Add diagnosis to order" when a diagnosis is required and missing. (PBI 46813)
+- 2026-11-01 — [Physician Desktop] Assumed: notes widget has read/unread, separate episode/all-visits See all, Print. → Actually: no read/unread, notes+sheets combined, 3 per page, cancelled never shown. (PBI 51349)
+- 2026-11-01 — [Physician Desktop / Vitals] Assumed: vitals arrows compare with the previous reading, abnormal rows get a red "critical" highlight, See all opens a trend popup, widget has Print. → Actually: arrow = the vital's High/Low status (normal = no arrow), no highlight, See all goes to the Vital Signs screen, Print out of scope. (PBI 51348)
+- 2026-11-01 — [Physician Desktop] Assumed: speciality widget tables could be described in 51420. → Actually: never mention speciality-based order/hiding; mention the default order instead. Removed step-3 wording, config bullet and AC-07 (rev 14). (PBI 51420)
+- 2026-11-01 — [Physician Desktop] Assumed: Business Value Category follows the category rules (permission restrictions → Compliance & Risk). → Actually: user wants `Cost & Efficiency` for every floating-bar story. (PBI 46813)
+- 2026-11-01 — [Physician Desktop] Questioned: PBI 51420 described speciality order/hide behaviour (AC-07) from `WidgetVisitSpeciality` / `WidgetHideVisitSpeciality` tables that exist but are empty; usage was never verified, so it should have been an assumption. (PBI 51420)
+
+
 ## Feature 34938 — Physician input restrictions [Confirmed — ADO, 2026-11-01]
 
 - 34941 Prevent changing ordered by in admission & discharge order (Done) — permissions "Edit Requesting Physician - Admission/Discharge" (Order Management).

@@ -1,5 +1,5 @@
 ---
-name: dotcare-db
+former-skill-name: dotcare-db (merged into hmis-system-knowledge 2026-11-03)
 description: Reference guide (not a source of truth) for DotCare HMIS structures, visit/product dependencies, package billing, cached module data and migration mappings. Use for DotCare schema questions, business-flow reviews, dependency analysis and SQL or migration design, always verifying its claims against the live database, source code or the team.
 ---
 
@@ -11,7 +11,7 @@ description: Reference guide (not a source of truth) for DotCare HMIS structures
 > - When you cite it, say so explicitly (e.g. "per the dotcare-db reference, not yet verified") and state what still needs confirming.
 > - If it conflicts with the live database, code or what the user says, the live source wins; tell the user about the conflict.
 >
-> **Keep improving it.** When work reveals something this skill is missing or gets wrong (a table, link, flow, configuration rule or correction confirmed by the live database, code or the user), append it to references/team-learnings.md before the turn ends, with the date, source and evidence. Read that file alongside the other references; where an entry there conflicts with an older reference, the dated, confirmed entry wins.
+> **Keep improving it.** When work reveals something this study is missing or gets wrong (a table, link, flow, configuration rule or correction confirmed by the live database, code or the user), record it before the turn ends in the module file under `../references/` (see Step 2 in `../SKILL.md`), with the date, source and evidence, noting which study file it corrects. Where a dated, confirmed entry there conflicts with this study, the entry wins.
 
 Study every module from three perspectives: patient, visit and product. Record setup, configuration, static/editable lookups, entity context, authoritative data, copied caches, write/update/cancel paths and evidence gaps. Security is a cross-cutting actor/permission layer, not an owned patient child. Read references/security-flow.md for the reviewed permission and entity behavior.
 
