@@ -1,5 +1,10 @@
 # HMIS — Blood Bank (`BloodBank` schema)
 
+## Don't repeat (past corrections — always read this section)
+
+- None yet.
+
+
 Studied in the AHJ prelive DB (`hmis-prelive-db`, Andalusia Hospital Jeddah — label config `FIN`/`LicenseNumber` = `H1088`). Data runs from May 2025 to Oct 2026. Unless marked otherwise every fact below is `[Confirmed — prelive DB, 2026-11-02]`.
 
 ## Module map — four sub-areas
