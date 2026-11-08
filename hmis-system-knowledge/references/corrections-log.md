@@ -2,6 +2,9 @@
 
 One line per correction, newest first. Format: `YYYY-MM-DD — [module] Assumed: … → Actually: … (context)`. The fact itself also goes in the module file.
 
+- 2026-11-08 — [CPOE] Assumed: `OrderLineOdata` cannot sort by `StartDatetime` (wrote PBI 55536 to add it). → Actually: `$orderby=StartDatetime` asc/desc already works on AHJ; test the API before writing a "support X" story. (PBI 55536)
+- 2026-11-03 — [Pharmacy] Assumed: PBI 53834 changes the top Barcode field to read the 2D code (BN → batch, SN → Serial No.), has a separate required/optional configuration, and covers returns. → Actually: one configuration (on = mandatory Serial No. input, off = none); the 2D code is read into the Serial No. input and only `(21)` SN is kept; no returns, no scanning changes — never mention scanning in that story. (PBI 53834)
+- 2026-11-03 — [Pharmacy] Assumed: with one row per scanned serial, scanning the same serial again (no duplicate check) adds another row. → Actually: a repeated serial adds to that row's Qty like scanning does today; only a new serial adds a row. (PBI 53834)
 - 2026-11-03 — [CPOE] Assumed: CPOE sends more than one approval status to `ProcessPredictedApproval`. → Actually: only status 4 (Approved); never mention any other status or `ApprovedQuantity`. (PBI 49432)
 - 2026-11-03 — [CPOE/NPHIES] Assumed: no radiology-result payload exists in `CPOE.NphiesCSRequestTracking` (only OrderEvent/OrderEventUpdate/LabResult seen in a 4 h export). → Actually: rad results use `PayloadType = 'RadReport'`; the export window just had none. Check the full table before saying a payload type doesn't exist.
 - 2026-11-02 — [CPOE] Assumed: PRN is excluded from active medications like STAT. → Actually: PRN stays visible when active, decided by status only, since it has no duration. (PBI 52819)

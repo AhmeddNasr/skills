@@ -33,6 +33,12 @@
 - "AHJ prelive" = `hmis-prelive-db` (Andalusia Hospital Jeddah; `BloodBank` label config FIN/license `H1088`). [Confirmed — prelive DB, 2026-11-02]
 - Not every module's configuration table uses `Key`: `BloodBank.Configuration` uses `Name` / `Value` / `Desc` (+ `MinValue` / `MaxValue` / `UnitEnName`), and some names contain spaces (e.g. `Next Donation`). [Confirmed — prelive DB, 2026-11-02]
 
+## Hospitals and HMIS environments [Confirmed — user, 2026-11-03]
+
+- Egypt hospitals: `AMH` = El-Maadi (Al Maadi; was wrongly called "AMC"), `ANC` = Antoniades, `ARC` = Roushdy, `ASH` = AlShallat (Shallalat). ANC, ARC and ASH run on one environment, `ANC` (AWS, full name "Antonidas/AlShallat/Roushdy") → MCP `anc-prelive-db`. `AMH` has its own environment (AWS).
+- KSA environments (code · name · hosting): `ALW` Andalusia Willens Park (Local-KSA in use; an AWS copy is not used), `FWZ` Fawaz (Local-KSA, on Release 9), `HC` Home Care (AWS), `SRI` / `AKW` Sari (Local-KSA), `JDC` Jedda Dental Center (Local-KSA), `SNB` Sanbel (Local-KSA), `CHT` Chatou (Local-KSA), `AHJ` New Haii El-Gamaa (Local-KSA) → MCP `hmis-prelive-db`.
+- The org structure (Operations / Technology / AHQ / companies, and the HMIS scrum split) is in the user's org-map artifact: Scrum 1 = Physician Desktop, Nurse Portal and their modules (CPOE, patient problems, screening, …) + Lab & Rad; Scrum 2 = Visit management, Pharmacy, OPD; Scrum 3 = Supply chain, Blood bank; Scrum 4 = NPHIES billing; Scrum 5 = Finance, MPI, Medical setup.
+
 ## Shared lookups
 
 ### Visit classification — `Shared.SLKP_VisitClassification` [Confirmed — prelive DB, 2026-10-31]
@@ -53,7 +59,10 @@
   - OPD: `VisitMgt.VisitAppointment.PhysicianEnName/ArName` (+ `ClinicInstanceID`). Its `LocationEnName` is the **hospital** ("Andalusia jeddah Hospital"), not the clinic. No clinic-name table/column was found in the prelive DB (clinic setup likely lives in another DB). [Unconfirmed where clinic name comes from]
   - ER: `VisitMgt.VisitTriageDetail` (`AssignedDroctorEnName/ArName` — sic, `BedEnName` e.g. "Bed (RZ1-B14)", `ZoneEnName` e.g. "Red Zone", `RoomEnName` = "Emergency department"). View `VisitMgt.VM_VW_LatestVisitDoctorDetails` (`VisitID`, `AssignedDroctorEnName/ArName`).
   - IPD: admitting doctor `VisitMgt.VisitAdmission.AdmittedDoctorEnName/ArName` (+ `AdmittedDoctorLog`); treating physicians `VisitMgt.VisitTreatingPhysicianAssignment` (`PhysicianNameEn`, `AssignmentDate`, `EndAssignmentDate`). Bed history `VisitMgt.VisitPatientAccommodation` (`FloorNameEn` e.g. "Ninth Floor", `RoomEnName` ward e.g. "9th-Floor Ward", `ZoneEnName` room e.g. "ROOM-910", `BedEnName` e.g. "BED-910", `AccommodationStartDateTime/EndDateTime`).
-  - Ambulatory: `VisitMgt.AmbulatoryVisitDetails.PhysicianID`.
+  - Ambulatory: `VisitMgt.AmbulatoryVisitDetails.PhysicianID`. The table has no `VisitID`; its `ID` joins to `VisitMgt.Visit.ID` (shared key). [Unconfirmed — join used successfully, 2026-11-04]
+  - Virtual: `VisitMgt.VirtualVisitDetails.PhysicianID` (+ `VisitID`).
+- Physician ID columns per visit type, all → `MedStp.Physician.ID` (every ID matched in a 2-month sample; **no declared FKs** from `VisitMgt` to `MedStp.Physician`): `VisitAppointment.PhysicianID`, `VisitTriageDetail.AssignedDroctorID` (sic), `VisitAdmission.AdmittedDoctorID`, `VisitTreatingPhysicianAssignment.PhysicianID` (note `VisitId` casing), `AmbulatoryVisitDetails.PhysicianID`, `VirtualVisitDetails.PhysicianID`. [Confirmed — AHJ prelive DB, 2026-11-04]
+- Physician master = `MedStp.Physician`: has `NationalId` (nvarchar, nullable), `HealthID`, `LicenseNumber`, `NPHIESCode`, `IsExternal`, `IsActive`, `IsDeleted`. In AHJ prelive, missing national IDs are `NULL` (never blank), and `IsExternal = 1` on every physician seen on recent visits, so `IsExternal` doesn't tell internal from external there. [Confirmed — AHJ prelive DB, 2026-11-04]
 - The query tool rejects any SQL containing the word `merge` (even inside `LIKE '%Merge%'`) — use `'%erged%'`. [Confirmed — 2026-11-01]
 
 ## Azure DevOps conventions
@@ -63,6 +72,7 @@
 - `Custom.Module` also seen: `Clinical Notes` (PBI 37270). [Confirmed — ADO, 2026-11-01]
 - More `Custom.Module` values: `Blood Bank` (a few items use `Blood bank`), `Nurse Portal`, `Lab and Rad`, `Ticket`. To list a module's items, run WIQL with `[Custom.Module] CONTAINS '<word>'`. The `ado_query_work_items` tool returns IDs only, and `ado_get_work_item` responses are very verbose (identity blobs, AI review summaries), so hand bulk reads to a subagent. [Confirmed — ADO, 2026-11-02]
 - Direct TFS REST calls from the shell (`Invoke-RestMethod -UseDefaultCredentials` to `http://ahq-tfs-azure/DefaultCollection/...`) now return 401, even outside the sandbox; they worked on 2026-10-28. Use the ADO MCP tools (`ado_get_work_item`, `ado_update_work_items`). Large reads get saved to a tool-results JSON file — parse it with node instead of reading it inline. [Confirmed — 2026-11-01]
+- `ado_search_code` (project `HMIS`) returned "Search API is unavailable on this server (HTTP 500)" on 2026-11-08; fall back to `ado_cr_get_repo_tree` / `ado_cr_get_file_content`. [Confirmed — ADO MCP, 2026-11-08]
 
 ## Security / permissions
 

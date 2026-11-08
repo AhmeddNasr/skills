@@ -23,6 +23,7 @@ Two mandatory jobs: **read** what is known before working, and **write back** wh
 | `references/physician-desktop.md` | floating control bar, quick add, patient banner, episodes, widgets, feature 34938 unassigned-visit restrictions |
 | `references/vital-signs.md` | vitals, vitals widget, normal ranges, high/low, SpO₂ / pain / consciousness scales, `VS.*` |
 | `references/blood-bank.md` | blood bank, transfusion orders, units/bags, reserve, cross-match, dispense, return, discard, compatibility, donor, donation, questionnaire, consent, split, external units, ISBT 128 / DIN, eMAR blood, `BloodBank.*`, `CPOE.Transfusion*` |
+| `references/pharmacy.md` | dispense pop-up (IPD/OPD), dispense history, cancel service, returns, RASD, serial / batch / GTIN tracking, `SC.SLKP_TrackingMethod`, `NP.DispensedItem` |
 | `references/corrections-log.md` | dated history of every correction (each one is also in its module's `## Don't repeat`) — search only |
 | `db/GUIDE.md` | full DotCare DB study guide — read for DB flow studies, dependency/impact analysis, SQL scripts, migrations |
 | `db/references/schemas/<Schema>.md` | per-schema worksheet (tables, setup/domain candidates) — read the one schema you need |
